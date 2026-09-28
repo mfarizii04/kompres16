@@ -1,0 +1,118 @@
+            
+        <!-- NAVBAR!! -->
+        <?php require "_parts/navbar.php"; ?>
+
+        <div id="layoutSidenav">
+            
+            <!-- SIDEBAR!! -->
+            <?php require "_parts/sidebar.php"; ?>
+
+            <div id="layoutSidenav_content">
+                <main>
+                    <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
+                        <div class="container-fluid px-4">
+                            <div class="page-header-content">
+                                <div class="row align-items-center justify-content-between pt-3">
+                                    <div class="col-auto mb-3">
+                                        <h1 class="page-header-title">
+                                            <div class="page-header-icon"><i class="fas fa-desktop"></i></div>
+                                            Aplikasi
+                                        </h1>
+                                    </div>
+                                    <div class="col-12 col-xl-auto mb-3">
+                                        <a class="btn btn-info" href="<?= base_url("public/templates/aplikasi.xlsx") ?>" download>
+                                            <i class="me-1" data-feather="file"></i>
+                                            Download Template Excel
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+                    <!-- Main page content-->
+                    <div class="container-fluid px-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <a class="btn btn-success" href="<?= base_url("admin/aplikasi/add") ?>">
+                                    <i class="me-1" data-feather="plus"></i>
+                                    Tambah Baru
+                                </a>
+
+                                &nbsp;&nbsp;
+
+                                <a class="btn btn-dark" href="<?= base_url("admin/aplikasi/import") ?>">
+                                    <i class="me-1" data-feather="upload"></i>
+                                    Import Data dari Excel
+                                </a>
+                            </div>
+                            <div class="card-body">
+                                <table id="datatablesSimple">
+                                    <thead>
+                                        <tr>
+                                            <th width="25%"><center>Nama Aplikasi</center></th>
+                                            <th><center>Alamat IP</center></th>
+                                            <th><center>Server</center></th>
+                                            <th><center>SSL Expired</center></th>
+                                            <th><center>Status</center></th>
+                                            <th><center>Aksi</center></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <?php
+                                        foreach ($aplikasi->result() as $gb) :
+                                        ?>
+
+                                        <tr align="center">
+                                            <td width="25%">
+                                                <?php if(strlen($gb->nama) >= 25){ echo substr($gb->nama, 0, 25) . "..."; } else { echo $gb->nama; } ?>
+                                            </td>
+                                            <td><?= $gb->ip ?></td>
+                                            <td><?php if(strlen($gb->server_name) >= 7){ echo substr($gb->server_name, 0, 7) . "..."; } else { echo $gb->server_name; } ?></td>
+                                            <td>
+                                                <?php
+                                                $selisih = $gb->sisa_hari;
+
+                                                if ($selisih <= 90) {
+                                                    echo '<a href="" title="Perpanjang SSL Aplikasi ' . $gb->nama . '" style="color: #69707a">';
+                                                }
+
+                                                echo date("d/m/Y", strtotime($gb->ssl_expired));
+
+                                                if ($selisih < 0) {
+                                                    echo '<span class="text-danger"> (Sudah expired)</span>';
+                                                } else {
+                                                    if ($selisih < 1) { $clr="danger font-weight-bold"; } elseif ($selisih <= 30) { $clr="danger"; } elseif ($selisih <= 90) { $clr="warning"; } else { $clr="secondary"; }
+                                                    echo '<span class="text-' . $clr . '"> (Sisa ' . $gb->sisa_hari . ' hari lagi)</span>';
+                                                }
+
+                                                echo '</a>';
+
+                                                ?>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-<?php if($gb->status=="Aktif"){ echo "success"; } else { echo "danger"; } ?>"><?= $gb->status ?></span>
+                                            </td>
+                                            <td>
+                                                <a class="btn btn-datatable btn-icon btn-transparent-dark me-2" href="<?= base_url("admin/aplikasi/detail/" . $gb->aplikasi_id) ?>" title="Detail Data"><i data-feather="search"></i></a>
+                                                &nbsp;&nbsp;
+                                                <a class="btn btn-datatable btn-icon btn-transparent-dark me-2" href="<?= base_url("admin/aplikasi/edit/" . $gb->aplikasi_id) ?>" title="Edit Data"><i data-feather="edit"></i></a>
+                                                &nbsp;&nbsp;
+                                                <button type="button" title="Hapus Data" class="btn btn-datatable btn-icon btn-transparent-dark btnDel" data-id="<?= $gb->aplikasi_id ?>" data-href="<?= base_url("admin/aplikasi/delete/") ?>" onclick="return delAction(this)"><i data-feather="trash-2"></i></button>
+                                            </td>
+                                        </tr>
+
+                                        <?php endforeach; ?>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+
+                <!-- FOOTER!! -->
+                <?php require "_parts/footer.php"; ?>
+
+            </div>
+        </div>
